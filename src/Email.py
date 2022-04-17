@@ -43,7 +43,7 @@ class Email:
             ERROR(e)
             return
 
-    def create_mail(self, to: str):
+    def create_mail(self, to: str, html_template: str):
         # Forming the message
         msg = MIMEMultipart('alternative')
         # email's sender: 'inno-lab <email@email.com>'
@@ -54,7 +54,7 @@ class Email:
         msg['Subject'] = 'testing'
 
         # reading the content of the email from a local html file
-        text = html = open('../test.html', 'r').read()
+        text = html = html_template
 
         # making MIME for text and html part
         text_part = MIMEText(text, 'text')
@@ -66,10 +66,10 @@ class Email:
 
         return msg.as_string()
 
-    def send_mail(self, to: str):
+    def send_mail(self, to: str, html_template: str):
         # try to send the email.
         try:
-            self.server.sendmail(self.LOGIN_EMAIL, to, self.create_mail(to))
+            self.server.sendmail(self.LOGIN_EMAIL, to, self.create_mail(to, html_template))
         except [SMTPDataError, SMTPRecipientsRefused] as e:
             ERROR(e)
 

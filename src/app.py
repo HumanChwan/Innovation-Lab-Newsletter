@@ -3,12 +3,16 @@ from typing import Union
 import streamlit as st
 import streamlit.components.v1 as components
 
+from jinja2 import Template
+import json
+
 from Email import Email
 from config import config, get_email_store_path
 from terminal import LOG, ERROR
 
-success_colors = ["#095317", "#2e9e235e"]
-error_colors = ["#530909", "#9e23235e"]
+
+success_colors = ["#095317", "#2e9e2322"]
+error_colors = ["#530909", "#9e232322"]
 log_colors = ["rgb(61, 157, 243)", "rgba(28, 131, 225, 0.1)"]
 
 
@@ -49,7 +53,7 @@ def remove_email_recipient(email_store_path, email_address):
     return True, f'Email <strong>{email_address}</strong> removed!'
 
 
-def send_mail_to_all_recipients(email_store_path):
+def send_mail_to_all_recipients(email_store_path: str):
     with config() as email:
         with open(email_store_path, "r") as f:
             emails = list(map(lambda x: x.strip(), f.read().split('\n')))
@@ -57,7 +61,7 @@ def send_mail_to_all_recipients(email_store_path):
                 if email_address == "":
                     continue
                 LOG(email_address)
-                email.send_mail(email_address)
+                email.send_mail(email_address, get_news_template())
 
     return True, 'Email(s) Sent!'
 
@@ -65,6 +69,13 @@ def send_mail_to_all_recipients(email_store_path):
 def read_all_emails(email_store_path):
     with open(email_store_path, "r") as f:
         return list(map(lambda x: x.strip(), f.read().split('\n')))
+
+
+def get_news_template():
+    with open('data/news.html') as f:
+        with open('data/data.json') as data_file:
+            data_json = json.load(data_file)
+            return Template(f.read()).render(news_objects=data_json['news_objects'])
 
 
 def main():
@@ -77,9 +88,14 @@ def main():
     email_address_remove = st.text_input(label='Remove Email: ')
     remove_email_button = st.button('Remove Email')
 
-    _, middle, _ = st.columns(3)
-    send_email_button = middle.button('Send Email to all Recipients')
-    show_all_emails = middle.button('Show all Emails')
+    # division of row into 3 divisions
+    _, middle3, _ = st.columns(3)
+    # division of row into 5 divisions
+    _, _, middle5, _, _ = st.columns(5)
+
+    send_email_button = middle3.button('Send Email to all Recipients')
+    preview_email_button = middle3.button('Preview email to be sent')
+    show_all_emails = middle5.button('Show all users')
 
     if add_email_button:
         if not email_address_add:
@@ -97,8 +113,12 @@ def main():
         emails = read_all_emails(email_store_path)
         components.html(f'<p style="{get_style(len(emails) > 1)}"><strong>{len(emails) - 1}</strong>'
                         f' user(s) have Subscribed.</p>', height=60)
-        if len(emails) > 1:
-            st.write('\n'.join([f'{idx + 1}. {x}' for idx, x in enumerate(emails[:-1])]))
+        with st.expander('Email Recipients'):
+            if len(emails) > 1:
+                st.write('\n'.join([f'{idx + 1}. {x}' for idx, x in enumerate(emails[:-1])]))
+    elif preview_email_button:
+        with st.expander('data/news.html'):
+            components.html(get_news_template(), height=500, scrolling=True)
     elif send_email_button:
         components.html(f'<p style="{get_style("LOG")}">Please Wait...</p>', height=60)
         success, message = send_mail_to_all_recipients(email_store_path)
