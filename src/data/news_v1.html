@@ -1,0 +1,52 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Newsletter of news related to cybercrime against women and children">
+    </head>
+    <body>
+
+        <ul id="news-container" style="
+            margin: 0 0;
+            padding: 0;
+        ">
+            {% for news in news_objects %}
+                <li style="
+                    list-style: none;
+                    display: flex;
+                    margin-bottom: 1rem;
+                    background-color: #B6D0E245;
+                    padding: 1.5rem;
+                    border-radius: 1rem;
+                    height: 200px;
+                ">
+                    <div style="
+                        margin-right: 1rem;
+                    ">
+                        <h3 style="
+                            margin: 0 0 1rem;
+                            padding: 0;
+                            font-size: 1.75rem;
+                            font-family: Arial;
+                            color: steelblue;
+                        ">
+                            {{ news.headline }}
+                        </h3>
+                        <p style="
+                            margin: 0;
+                            padding: 0;
+                            height: 140px;
+                            overflow: hidden;
+                            font-size: 1rem;
+                            font-family: Arial;
+                            color: #4682B4ff;
+                        ">
+                            {{ news.content }}
+                        </p>
+                    </div>
+                    <img src="{{ news.image_url }}"  alt="desc" width="30%">
+
+                </li>
+            {% endfor %}
+        </ul>
+    </body>
+</html>
