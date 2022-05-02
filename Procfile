@@ -1,1 +1,1 @@
-worker: cd src && streamlit run app.py
+web: cd src && streamlit run app.py
