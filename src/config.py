@@ -1,12 +1,8 @@
 import os
 
 from Email import Email
-from dotenv import load_dotenv
 
 from terminal import LOG
-
-# Getting login credentials from the .env file
-load_dotenv()
 
 
 def check_and_verify_store_file(email_store_path: str):
