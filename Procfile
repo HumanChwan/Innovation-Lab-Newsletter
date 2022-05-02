@@ -1,0 +1,1 @@
+worker: cd src && streamlit run app.py
